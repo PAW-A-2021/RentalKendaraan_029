@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace RentalKendaraan.Models
 {
@@ -11,6 +12,7 @@ namespace RentalKendaraan.Models
         }
 
         public int IdGender { get; set; }
+        [Required(ErrorMessage = "Nama Gender Tidak Boleh Kosong")]
         public string NamaGender { get; set; }
 
         public ICollection<Customer> Customer { get; set; }
