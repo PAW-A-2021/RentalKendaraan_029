@@ -6,6 +6,8 @@ namespace RentalKendaraan.Models
 {
     public partial class RentKendaraanContext : DbContext
     {
+        internal object Kendaraans;
+
         public RentKendaraanContext()
         {
         }
@@ -23,6 +25,7 @@ namespace RentalKendaraan.Models
         public virtual DbSet<KondisiKendaraan> KondisiKendaraan { get; set; }
         public virtual DbSet<Peminjaman> Peminjaman { get; set; }
         public virtual DbSet<Pengembalian> Pengembalian { get; set; }
+        public object Pengembalians { get; internal set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
