@@ -22,11 +22,11 @@ namespace RentalKendaraan.Controllers
         public async Task<IActionResult> Index(string ktsd, string searchStr)
         {
             var ktsdList = new List<string>();
-            var ktsdQuery = from d in _context.Pengembalians orderby d.IdKondisiNavigation select d.IdKondisiNavigation.NamaKondisi;
+            var ktsdQuery = from d in _context.Pengembalian orderby d.IdKondisiNavigation select d.IdKondisiNavigation.NamaKondisi;
 
             ktsdList.AddRange(ktsdQuery.Distinct());
             ViewBag.ktsd = new SelectList(ktsdList);
-            var menu = from m in _context.Pengembalians.Include(p => p.IdKondisiNavigation).Include(p => p.IdPeminjamanNavigation) select m;
+            var menu = from m in _context.Pengembalian.Include(p => p.IdKondisiNavigation).Include(p => p.IdPeminjamanNavigation) select m;
 
             if (!string.IsNullOrEmpty(ktsd))
             {
