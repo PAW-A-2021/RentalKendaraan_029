@@ -19,10 +19,10 @@ namespace RentalKendaraan.Controllers
         }
 
         // GET: Pengembalians
-        public async Task<IActionResult> Index(string ktsd, string searchStr)
+        public async Task<IActionResult> Index(string ktsd, string searchString, string sortOrder, string currentFilter, int? pageNumber)
         {
             var ktsdList = new List<string>();
-            var ktsdQuery = from d in _context.Pengembalian orderby d.IdKondisiNavigation select d.IdKondisiNavigation.NamaKondisi;
+            var ktsdQuery = from d in _context.Pengembalian orderby d.Denda.ToString() select d.Denda.ToString();
 
             ktsdList.AddRange(ktsdQuery.Distinct());
             ViewBag.ktsd = new SelectList(ktsdList);
@@ -30,14 +30,45 @@ namespace RentalKendaraan.Controllers
 
             if (!string.IsNullOrEmpty(ktsd))
             {
-                menu = menu.Where(x => x.IdKondisiNavigation.NamaKondisi == ktsd);
+                menu = menu.Where(x => x.Denda.ToString() == ktsd);
             }
 
-            if (!string.IsNullOrEmpty(searchStr))
+            if (!string.IsNullOrEmpty(searchString))
             {
-                menu = menu.Where(s => s.Denda.ToString().Contains(searchStr) || s.IdKondisiNavigation.NamaKondisi.Contains(searchStr) || s.IdPeminjamanNavigation.IdCustomerNavigation.NamaCustomer.Contains(searchStr));
+                menu = menu.Where(s => s.IdKondisiNavigation.NamaKondisi.Contains(searchString) || s.IdPeminjamanNavigation.TglPeminjaman.ToString().Contains(searchString) || s.TglPengembalian.ToString().Contains(searchString));
             }
-            return View(await menu.ToListAsync());
+
+            ViewData["CurrentSort"] = sortOrder;
+            if (searchString != null)
+            {
+                pageNumber = 1;
+            }
+            else
+            {
+                searchString = currentFilter;
+            }
+            ViewData["CurrentFilter"] = searchString;
+            int pageSize = 5;
+            ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+            ViewData["DateSortParm"] = sortOrder == "Date" ? "date_desc" : "Date";
+
+            switch (sortOrder)
+            {
+                case "name_desc":
+                    menu = menu.OrderByDescending(s => s.Denda);
+                    break;
+                case "Date":
+                    menu = menu.OrderBy(s => s.TglPengembalian);
+                    break;
+                case "date_desc":
+                    menu = menu.OrderByDescending(s => s.TglPengembalian);
+                    break;
+                default: //name ascending
+                    menu = menu.OrderBy(s => s.Denda);
+                    break;
+            }
+
+            return View(await PaginatedList<Pengembalian>.CreateAsync(menu.AsNoTracking(), pageNumber ?? 1, pageSize));
         }
 
         // GET: Pengembalians/Details/5
